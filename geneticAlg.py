@@ -2,6 +2,7 @@ import random
 
 from gene_functions import exclusive, violation
 from simple_functions import nameDict
+from weighted_test import generateGraph1
 
 class Key:
     def __init__(self, keyNum, nameNum, color, parents = [], children = []):
@@ -38,7 +39,7 @@ def geneticAlg(s_keyNum, keylist): # source, keylist
             nameColorList.append(keylist[key].color)
         #print "nameColorList: " + str(nameColorList)
         # call exclusive on nameColorList
-        scale = 2
+        scale = 5
         nameScore = exclusive(nameColorList, scale)
         geneScore += nameScore
         #print "nameScore:     " + str(nameScore)
@@ -99,7 +100,7 @@ if __name__ == '__main__':
     print "using the Genetic Algorithm"
     print "20 trust assignments for each generation, 5 best survive to contribute 4 in the next generation with small modifications (no mating)" 
 
-    # manually create a pgp map to test out the simplest algorithm
+    ''' manually create a pgp map to test out the simplest algorithm
     # this initial graph has no conflicts
     keylist = [ Key(0, 4, 0, [], [1, 4]),
                 Key(1, 1, 1, [0], [2, 3]),
@@ -109,6 +110,10 @@ if __name__ == '__main__':
                 Key(5, 25, 0,  [], [4]),
                 Key(6, 3, 0, [3], [])
            ]
+    '''
+    print
+    keylist = generateGraph1(30,30,15,10,10)
+    for k in keylist: print k
     srcKey = 5
 
     # Generation 0: randomly assign trust color 20 times
@@ -124,28 +129,28 @@ if __name__ == '__main__':
 
         # 2. see the updated colors keylist
         #print "keys in the graph:"
-        #for k in keylist: print k
+        for k in keylist: print k
 
         # 3. score this new keylist
         geneScore = geneticAlg(srcKey, keylist)
-        print "geneScore = " + str(geneScore)
+        print "\n Initial Score = " + str(geneScore)
 
         oldGen[geneScore] = colorAssignments
 
-    generations = 100 # x more generations after initial gen
+    generations = 10000 # x more generations after initial gen
     for g in range(generations):
-        print "\n===================================\n"
-        print "Generation " + str(g+1)
+        #print "\n===================================\n"
+        #print "Generation " + str(g+1)
 
         # sort the scores (keys of oldGen dictionary)
         scores = oldGen.keys()
         scores.sort()
-        print "old scores: " + str(scores)
+        #print "old scores: " + str(scores)
 
         # pick the 5 best ones
         for i in range(5):
             oldColorAssignment = oldGen[scores[i]]
-            print "\nOld Score: " + str(scores[i]) 
+            #print "\nOld Score: " + str(scores[i]) 
             #print " and its Color Assignments: " + str(oldColorAssignment)
             # each makes n "babies" with small modifications
             n = 4
@@ -160,7 +165,7 @@ if __name__ == '__main__':
             
                 # 3. score this new keylist
                 geneScore = geneticAlg(srcKey, keylist)
-                print "new geneScore = " + str(geneScore)
+                #print "new geneScore = " + str(geneScore)
 
                 newGen[geneScore] = newColorAssignments
 
@@ -173,7 +178,7 @@ if __name__ == '__main__':
     scores = oldGen.keys()
     scores.sort()
     # pick best one
-    print "\n\nBEST SCORE: " + str(scores[0])
+    print "\nBEST SCORE: " + str(scores[0])
     oldColorAssignment = oldGen[scores[0]]
     resetKeyColors(keylist, oldColorAssignment)
     for k in keylist: print k
