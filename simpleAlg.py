@@ -1,14 +1,27 @@
 class Key:
-    def __init__(self, keyNum, nameNum, parents = [], children = []):
+    def __init__(self, keyNum, nameNum, color, parents = [], children = []):
         self.keyNum = keyNum
         self.nameNum = nameNum
-        self.parents = parents
-        self.children = children
+        self.color = color          # black is 0, white is 1
+        self.parents = parents      # parent's keyNums
+        self.children = children    # children's keyNums
     def __str__(self):
         return str(self.keyNum) + "\t" + str(self.nameNum) + "\t" + \
             str(self.parents) + "\t" + str(self.children)
     def __repr__(self):
         return self.__str__()
+
+# returns a dictionary of name --> keyNum list with that name
+def nameDict(keylist):
+    nameDict = {}
+    for k in keylist:
+        if k.nameNum in nameDict:
+            # if the key's has been seen already
+            nameDict[k.nameNum].append(k.keyNum)
+        else:
+            # else create a new name --> keyNum entry
+            nameDict[k.nameNum] = [k.keyNum]
+    return nameDict
 
 # function to mark all descendants of src trustworthy
 # return a list of trustworthy nodes' keyNums (i.e. descendats of src)
@@ -61,17 +74,33 @@ def markAncestorsUntrust(untrustworthy, keylist):
         untrusted_ancestors.extend( markAncestorsUntrust_helper(untrustedKeyNum, keylist, []) )
     return untrusted_ancestors
 
+# count the number of violations there are in the graph/keyList
+# violation := white (1) --> black (0)
+def countViolations(keylist):
+    count = 0
+    # iterate through all the white nodes
+    for k in keylist:
+        if k.color == 1:
+            # add one for each black children
+            for child in k.children:
+                if keylist[child].color == 0:
+                    count += 1
+    return count
+
 # the simple algorithm marks:
 # - all descendants of source key trustworthy
 # - pretenders of trustworthy keys untrustworthy
 # - all ancestors of untrustworthy nodes untrustworthy
-def simpleAlg(s_keyNum, keylist):
+def simpleAlg(s_keyNum, keylist): # source, keylist
     print "in simpleAlg"
     
-    src = keylist[s_keyNum]
-
+    # Go through, find a list of names
+    names = nameDict(keylist)
+    print "Names in graph/keylist:"
+    print names
+    
     # step 1. find all trustworthy nodes
-    # trustworthy nodes are direct descendants of src
+    # trustworthy nodes are direct descendants of source
     trustworthy = markTrust(s_keyNum, keylist, [])
     print "trustworthy nodes:"
     print trustworthy
@@ -87,6 +116,7 @@ def simpleAlg(s_keyNum, keylist):
     print "untrustworthy nodes, after marked ancestors too:"
     print untrustworthy
 
+    # step 4. unsure
     # go through keylist, if keyNum is neither trustworthy or untrustworthy, mark unsure
     unsure = []
     for k in keylist:
@@ -96,18 +126,24 @@ def simpleAlg(s_keyNum, keylist):
     print "unsure nodes:"
     print unsure
 
+    # count the number of violations
+    # violation := white (1) --> black (0)
+    violationsNum = countViolations(keylist)
+    print "number of violations"
+    print violationsNum
+
 if __name__ == '__main__':
     print "Begin PGP Trust Ranking"
 
     # manually create a pgp map to test out the simplest algorithm
     # this initial graph has no conflicts
-    keylist = [ Key(0, 4, [], [1, 4]),
-                Key(1, 1, [0], [2, 3]),
-                Key(2, 5, [1], []),
-                Key(3, 1, [1, 4], [6]),
-                Key(4, 2, [0, 5], [3]),
-                Key(5, 25, [], [4]),
-                Key(6, 3, [3], [])
+    keylist = [ Key(0, 4, 0, [], [1, 4]),
+                Key(1, 1, 1, [0], [2, 3]),
+                Key(2, 5, 1, [1], []),
+                Key(3, 1, 0, [1, 4], [6]),
+                Key(4, 2, 1, [0, 5], [3]),
+                Key(5, 25, 0,  [], [4]),
+                Key(6, 3, 0, [3], [])
            ]
     print "keys in the graph:"
     for k in keylist: print k
