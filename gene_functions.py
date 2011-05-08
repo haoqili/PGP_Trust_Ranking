@@ -1,6 +1,8 @@
 import math
+# created by Lin Fei
 
 # scoring name group
+# list is a name's trust values list for each of the nodes that claim to have that name
 def exclusive(lst,scale):
     n = len(lst)
     s = sum(lst)
@@ -12,9 +14,11 @@ def exclusive(lst,scale):
     lst.remove(m)
     for i in lst:
        prod = prod*(1-math.sqrt(i))
-    return float(scale*prod**(1.0/(n-1)))
+    return float(scale*(1-prod**(1.0/(n-1))))
 
 # scoring signs
+# higher trust means more trustworthy
+# penalize if more trustworthy signs less trustworthy
 def violation(aTrustScore,bTrustScore): #A signs B's public key
     if aTrustScore > bTrustScore:
        return float(aTrustScore - bTrustScore)
