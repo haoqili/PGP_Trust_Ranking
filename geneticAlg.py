@@ -1,3 +1,5 @@
+import random
+
 from gene_functions import exclusive, violation
 from simple_functions import nameDict
 
@@ -14,6 +16,15 @@ class Key:
             str(self.parents) + "\t" + str(self.children)
     def __repr__(self):
         return self.__str__()
+
+# randomize the trust-score (color) of each key
+# except for src, which has full trust, i.e 1
+def randColors(keylist, srcKey):
+    for key in keylist:
+        if key.keyNum == srcKey:
+            keylist[srcKey].color = 1.0
+        else:
+            key.color = random.random() # [0,1), don't know how to make 1 inclusive :P
 
 # the genetic algorithm:
 # - randomly assigns trust worthiness number to each node
@@ -68,7 +79,9 @@ if __name__ == '__main__':
                 Key(5, 25, 0,  [], [4]),
                 Key(6, 3, 0, [3], [])
            ]
+    src = 5
+    randColors(keylist, src)
     print "keys in the graph:"
     for k in keylist: print k
 
-    geneticAlg(5, keylist)
+    geneticAlg(src, keylist)
