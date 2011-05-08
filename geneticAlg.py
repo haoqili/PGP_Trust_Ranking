@@ -30,7 +30,8 @@ def randColors(keylist, srcKey):
 # - randomly assigns trust worthiness number to each node
 # - run functions to get the best assignments
 def geneticAlg(s_keyNum, keylist): # source, keylist
-    print "in geneticAlg"
+    print "Begin PGP Trust Ranking"
+    print "using genetic Algorithm"
     geneScore = 0 # LOWER means better
     
     # step 1. geneScore contribution from each name group
