@@ -4,7 +4,17 @@ from gene_functions import exclusive, violation
 from simple_functions import nameDict
 from weighted_test import generateGraph1
 
-totalgens = 10000  # x more generations after initial gen
+printStep = 200     # print score per printStep geneartions
+
+scale = 10          # tweaks how strongly consistency is violated
+totalgens = 1000    # number of generations after initial gen
+genSize = 100       # number of babies per generation
+pickNum = 5         # number of babies picked to be as parents (asexually)
+produceNum = genSize/pickNum    # number of babies produced per parent
+cTrustscale = 10    # srcKey's children's trusts are higher
+gcTrustscale = 2    # srcKey's grandchildren's trusts are higher
+mutationRate = 0.01 # rate of swithing 0 and 1
+srcKey = 5
 
 class Key:
     def __init__(self, keyNum, nameNum, color, parents = [], children = []):
@@ -41,7 +51,6 @@ def geneticAlg(s_keyNum, keylist): # source, keylist
             nameColorList.append(keylist[key].color)
         #print "nameColorList: " + str(nameColorList)
         # call exclusive on nameColorList
-        scale = 15 # scale is important, 5 is bad, 100 is way too high
         nameScore = exclusive(nameColorList, scale)
         geneScore += nameScore
         #print "nameScore:     " + str(nameScore)
@@ -66,9 +75,9 @@ def randColors(keylist, srcKey):
     colorAssignments = []
     for key in keylist:
         if key.keyNum == srcKey:
-            key.color = 1.0
+            key.color = 1
         else:
-            key.color = random.uniform(0,1) # float [0,1]
+            key.color = random.randint(0,1)
         colorAssignments.append(key.color)
     return colorAssignments
 
@@ -79,18 +88,21 @@ def randColors(keylist, srcKey):
 def aBabysColors(oldColors, srcKey, genNum):
     aBabysColors = []
     # mutate each key's color based on random gaussian :D yay Python!!
-    # stdv of gauss has exponential decay
-    # stdv = 0.03 - 0.027 * 3**(-2*genNum / totalgens)
-    stdv = 0.02
+    newColor = 0
     for j in range(len(oldColors)):
         if j == srcKey: # srcKey's color is always 1
-            newColor = 1.0
+            newColor = 1
         else:
+            # switch colors with mutationRate probability
             color = oldColors[j]
-            mutation = random.gauss(0, stdv)
-            newColor = color + mutation
-            if newColor > 1: newColor = 1
-            if newColor < 0: newColor = 0
+            roll = random.uniform(0,1)
+            if roll < mutationRate:
+                if color == 1:
+                    newColor = 0
+                else:
+                    newColor = 1
+            else:
+                newColor = color
         aBabysColors.append(newColor)
     return aBabysColors
         
@@ -105,21 +117,18 @@ if __name__ == '__main__':
     print "using the Genetic Algorithm"
     print "20 trust assignments for each generation, 5 best survive to contribute 4 in the next generation with small modifications (no mating)" 
 
-    ''' manually create a pgp map to test out the simplest algorithm
-    # this initial graph has no conflicts
-    keylist = [ Key(0, 4, 0, [], [1, 4]),
-                Key(1, 1, 1, [0], [2, 3]),
-                Key(2, 5, 1, [1], []),
-                Key(3, 1, 0, [1, 4], [6]),
-                Key(4, 2, 1, [0, 5], [3]),
-                Key(5, 25, 0,  [], [4]),
-                Key(6, 3, 0, [3], [])
-           ]
-    '''
     print
-    keylist = generateGraph1(30,30,15,10,10)
+    # good, fake, bad, max number of signatures for good, max sigs for bad
+    # fake = pretending to be someone else. bad = made up people 
+    keylist = generateGraph1(100,100,50,30,20) # srcKey set above
+
+    # Increase trust for srckey's grandchildren and children
+    for n in keylist[srcKey].children:
+        keylist[n].children = keylist[n].children*gcTrustscale
+    keylist[srcKey].children = keylist[srcKey].children*cTrustscale
+    
+    print "Initial graph: "
     for k in keylist: print k
-    srcKey = 5
 
     # Generation 0: randomly assign trust color 20 times
     # each time remembers: geneScore --> colorAssignments
@@ -127,18 +136,18 @@ if __name__ == '__main__':
     newGen = {}
     print "\n===================================\n"
     print "Generation 0 "
-    for i in range(20):
+    for i in range(genSize):
         # 1. get generation 0's colors
         #print "\nTrial " + str(i)
         colorAssignments = randColors(keylist, srcKey)
 
         # 2. see the updated colors keylist
-        #print "keys in the graph:"
-        for k in keylist: print k
+        #print "keys in the graph for generation 0:"
+        #for k in keylist: print k
 
         # 3. score this new keylist
         geneScore = geneticAlg(srcKey, keylist)
-        print "\n Initial Score = " + str(geneScore)
+        #print "\n Initial Score for generation 0 = " + str(geneScore)
 
         oldGen[geneScore] = colorAssignments
 
@@ -151,14 +160,13 @@ if __name__ == '__main__':
         scores.sort()
         #print "old scores: " + str(scores)
 
-        # pick the 5 best ones
-        for i in range(5):
+        # pick the pickNum best ones
+        for i in range(pickNum):
             oldColorAssignment = oldGen[scores[i]]
             #print "\nOld Score: " + str(scores[i]) 
             #print " and its Color Assignments: " + str(oldColorAssignment)
-            # each makes n "babies" with small modifications
-            n = 4
-            for j in range(n):
+            # each makes produceNum "babies" with small modifications
+            for j in range(produceNum):
                 # get this baby's colors
                 newColorAssignments = aBabysColors(oldColorAssignment, srcKey, g)
                 
@@ -168,7 +176,7 @@ if __name__ == '__main__':
                 # 3. score this new keylist
                 geneScore = geneticAlg(srcKey, keylist)
                 #print "keys in the graph:"
-                if (g % 1000 == 0) and (i ==0) and (j == 0):
+                if (g % printStep == 0) and (i ==0) and (j == 0):
                     print "\n g = " + str(g)
                     for k in keylist: print k
                     print "new geneScore = " + str(geneScore)
