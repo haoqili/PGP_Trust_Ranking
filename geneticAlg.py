@@ -5,11 +5,12 @@ from gene_functions import exclusive, violation
 from simple_functions import nameDict
 from weighted_test import generateGraph1
 
-scorePlotNum = 0
+scorePlotNum = 1
+scoreComment = "1000gens"
 printStep = 200     # print score per printStep geneartions
 
 scale = 10          # tweaks how strongly consistency is violated
-totalgens = 100    # number of generations after initial gen
+totalgens = 1000    # number of generations after initial gen
 genSize = 100       # number of babies per generation
 pickNum = 5         # number of babies picked to be as parents (asexually)
 produceNum = genSize/pickNum    # number of babies produced per parent
@@ -19,7 +20,7 @@ mutationRate = 0.01 # rate of swithing 0 and 1
 srcKey = 5
 
 scoresPlotList = []     # to be plotted with plt
-scorePlotName = "ScorePlot_" + str(scorePlotNum) + ".png"
+scorePlotName = "plots/ScorePlot_" + str(scorePlotNum) + "_" + scoreComment + ".png"
 
 class Key:
     def __init__(self, keyNum, nameNum, color, parents = [], children = []):
