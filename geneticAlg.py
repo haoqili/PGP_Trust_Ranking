@@ -4,6 +4,8 @@ from gene_functions import exclusive, violation
 from simple_functions import nameDict
 from weighted_test import generateGraph1
 
+totalgens = 10000  # x more generations after initial gen
+
 class Key:
     def __init__(self, keyNum, nameNum, color, parents = [], children = []):
         self.keyNum = keyNum
@@ -39,7 +41,7 @@ def geneticAlg(s_keyNum, keylist): # source, keylist
             nameColorList.append(keylist[key].color)
         #print "nameColorList: " + str(nameColorList)
         # call exclusive on nameColorList
-        scale = 5
+        scale = 15 # scale is important, 5 is bad, 100 is way too high
         nameScore = exclusive(nameColorList, scale)
         geneScore += nameScore
         #print "nameScore:     " + str(nameScore)
@@ -74,15 +76,18 @@ def randColors(keylist, srcKey):
 # in the newGeneration w/ random mutations
 # THE ORDER OF COLORS BETTER CORRESPOND TO KEY NUM
 # returns keyColor list
-def aBabysColors(oldColors, srcKey):
+def aBabysColors(oldColors, srcKey, genNum):
     aBabysColors = []
     # mutate each key's color based on random gaussian :D yay Python!!
+    # stdv of gauss has exponential decay
+    # stdv = 0.03 - 0.027 * 3**(-2*genNum / totalgens)
+    stdv = 0.02
     for j in range(len(oldColors)):
         if j == srcKey: # srcKey's color is always 1
             newColor = 1.0
         else:
             color = oldColors[j]
-            mutation = random.gauss(0, 0.03)
+            mutation = random.gauss(0, stdv)
             newColor = color + mutation
             if newColor > 1: newColor = 1
             if newColor < 0: newColor = 0
@@ -137,8 +142,7 @@ if __name__ == '__main__':
 
         oldGen[geneScore] = colorAssignments
 
-    generations = 10000 # x more generations after initial gen
-    for g in range(generations):
+    for g in range(totalgens):
         #print "\n===================================\n"
         #print "Generation " + str(g+1)
 
@@ -156,16 +160,18 @@ if __name__ == '__main__':
             n = 4
             for j in range(n):
                 # get this baby's colors
-                newColorAssignments = aBabysColors(oldColorAssignment, srcKey)
+                newColorAssignments = aBabysColors(oldColorAssignment, srcKey, g)
                 
                 # 2. update colors keylist
                 resetKeyColors(keylist, newColorAssignments)
-                #print "keys in the graph:"
-                #for k in keylist: print k
             
                 # 3. score this new keylist
                 geneScore = geneticAlg(srcKey, keylist)
-                #print "new geneScore = " + str(geneScore)
+                #print "keys in the graph:"
+                if (g % 1000 == 0) and (i ==0) and (j == 0):
+                    print "\n g = " + str(g)
+                    for k in keylist: print k
+                    print "new geneScore = " + str(geneScore)
 
                 newGen[geneScore] = newColorAssignments
 
