@@ -1,13 +1,15 @@
 import random
+import matplotlib.pyplot as plt
 
 from gene_functions import exclusive, violation
 from simple_functions import nameDict
 from weighted_test import generateGraph1
 
+scorePlotNum = 0
 printStep = 200     # print score per printStep geneartions
 
 scale = 10          # tweaks how strongly consistency is violated
-totalgens = 1000    # number of generations after initial gen
+totalgens = 100    # number of generations after initial gen
 genSize = 100       # number of babies per generation
 pickNum = 5         # number of babies picked to be as parents (asexually)
 produceNum = genSize/pickNum    # number of babies produced per parent
@@ -15,6 +17,9 @@ cTrustscale = 10    # srcKey's children's trusts are higher
 gcTrustscale = 2    # srcKey's grandchildren's trusts are higher
 mutationRate = 0.01 # rate of swithing 0 and 1
 srcKey = 5
+
+scoresPlotList = []     # to be plotted with plt
+scorePlotName = "ScorePlot_" + str(scorePlotNum) + ".png"
 
 class Key:
     def __init__(self, keyNum, nameNum, color, parents = [], children = []):
@@ -160,6 +165,9 @@ if __name__ == '__main__':
         scores.sort()
         #print "old scores: " + str(scores)
 
+        # put the best score in the plot list
+        scoresPlotList.append(scores[0])
+
         # pick the pickNum best ones
         for i in range(pickNum):
             oldColorAssignment = oldGen[scores[i]]
@@ -191,8 +199,16 @@ if __name__ == '__main__':
     # sort the scores (keys of oldGen dictionary)
     scores = oldGen.keys()
     scores.sort()
+    # put the score in the plot list
+    scoresPlotList.append(scores[0])
     # pick best one
     print "\nBEST SCORE: " + str(scores[0])
     oldColorAssignment = oldGen[scores[0]]
     resetKeyColors(keylist, oldColorAssignment)
     for k in keylist: print k
+
+    # plot the scores
+    plt.plot(scoresPlotList)
+    plt.ylabel('Score (higher = worse)')
+    plt.xlabel('Generation Numbers')
+    plt.savefig(scorePlotName)
