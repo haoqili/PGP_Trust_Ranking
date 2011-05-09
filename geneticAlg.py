@@ -1,16 +1,31 @@
 import random
 import matplotlib.pyplot as plt
+import Image, ImageDraw
 
 from gene_functions import exclusive, violation
 from simple_functions import nameDict
 from weighted_test import generateGraph1
 
-scorePlotNum = 1
-scoreComment = "1000gens"
+# Drawing Settings
+scorePlotNum = 2
+scoreComment = "100gens"
+colorimComment = ""
+
+# Output Settings
 printStep = 200     # print score per printStep geneartions
 
+# Internal Settings
+# good, fake, bad, max number of signatures for good, max sigs for bad
+# fake = pretending to be someone else. bad = made up people 
+#keylist = generateGraph1(100,100,50,30,20) # srcKey set above
+goodNum = 100
+fakeNum = 100
+badNum = 50
+goodSigs = 30
+badSigs = 20
+
 scale = 10          # tweaks how strongly consistency is violated
-totalgens = 1000    # number of generations after initial gen
+totalgens = 100    # number of generations after initial gen
 genSize = 100       # number of babies per generation
 pickNum = 5         # number of babies picked to be as parents (asexually)
 produceNum = genSize/pickNum    # number of babies produced per parent
@@ -19,8 +34,14 @@ gcTrustscale = 2    # srcKey's grandchildren's trusts are higher
 mutationRate = 0.01 # rate of swithing 0 and 1
 srcKey = 5
 
+# Drawing Internals
 scoresPlotList = []     # to be plotted with plt
-scorePlotName = "plots/ScorePlot_" + str(scorePlotNum) + "_" + scoreComment + ".png"
+scorePlotName = "plots/" + str(scorePlotNum) + "_ScorePlot_" + scoreComment + ".png"
+
+colorim = Image.new("RGB", (800, 600), (0,0,0,0)) # image of all the coloring changes
+draw = ImageDraw.Draw(colorim)
+colorimName = "plots/" + str(scorePlotNum) + "_Colors_" + colorimComment + ".png"
+cim_yIncrement = 600/genSize  # this can have up to 0.5 precision
 
 class Key:
     def __init__(self, keyNum, nameNum, color, parents = [], children = []):
@@ -126,7 +147,7 @@ if __name__ == '__main__':
     print
     # good, fake, bad, max number of signatures for good, max sigs for bad
     # fake = pretending to be someone else. bad = made up people 
-    keylist = generateGraph1(100,100,50,30,20) # srcKey set above
+    keylist = generateGraph1(goodNum,fakeNum,badNum,goodSigs,badSigs) # srcKey set above
 
     # Increase trust for srckey's grandchildren and children
     for n in keylist[srcKey].children:
@@ -168,6 +189,8 @@ if __name__ == '__main__':
 
         # put the best score in the plot list
         scoresPlotList.append(scores[0])
+        # draw a row of colors on colorImage
+        bestColorAssignment = oldGen[scores[0]]
 
         # pick the pickNum best ones
         for i in range(pickNum):
@@ -213,3 +236,6 @@ if __name__ == '__main__':
     plt.ylabel('Score (higher = worse)')
     plt.xlabel('Generation Numbers')
     plt.savefig(scorePlotName)
+
+    # draw the colors
+    colorim.save(colorimName)
