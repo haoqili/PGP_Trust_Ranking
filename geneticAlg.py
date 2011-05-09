@@ -7,8 +7,8 @@ from simple_functions import nameDict
 from weighted_test import generateGraph1
 
 # Drawing Settings
-scorePlotNum = 5
-scoreComment = "600gens_12_3_trustscale"
+scorePlotNum = 6
+scoreComment = "600gens_20_4_trustscale"
 colorimComment = ""
 
 # Output Settings
@@ -30,8 +30,8 @@ scale = 10          # tweaks how strongly consistency is violated
 genSize = 100       # number of babies per generation
 pickNum = 5         # number of babies picked to be as parents (asexually)
 produceNum = genSize/pickNum    # number of babies produced per parent
-cTrustscale = 12    # srcKey's children's trusts are higher
-gcTrustscale = 3    # srcKey's grandchildren's trusts are higher
+cTrustscale = 20    # srcKey's children's trusts are higher
+gcTrustscale = 4    # srcKey's grandchildren's trusts are higher
 mutationRate = 0.01 # rate of swithing 0 and 1
 srcKey = 5
 
