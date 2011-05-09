@@ -7,12 +7,12 @@ from simple_functions import nameDict
 from weighted_test import generateGraph1
 
 # Drawing Settings
-scorePlotNum = 2
-scoreComment = "100gens"
+scorePlotNum = 5
+scoreComment = "600gens_12_3_trustscale"
 colorimComment = ""
 
 # Output Settings
-printStep = 200     # print score per printStep geneartions
+printStep = 100     # print score per printStep geneartions
 
 # Internal Settings
 # good, fake, bad, max number of signatures for good, max sigs for bad
@@ -23,14 +23,15 @@ fakeNum = 100
 badNum = 50
 goodSigs = 30
 badSigs = 20
+totalKeys = goodNum+fakeNum+badNum
 
+totalgens = 600    # number of generations after initial gen
 scale = 10          # tweaks how strongly consistency is violated
-totalgens = 100    # number of generations after initial gen
 genSize = 100       # number of babies per generation
 pickNum = 5         # number of babies picked to be as parents (asexually)
 produceNum = genSize/pickNum    # number of babies produced per parent
-cTrustscale = 10    # srcKey's children's trusts are higher
-gcTrustscale = 2    # srcKey's grandchildren's trusts are higher
+cTrustscale = 12    # srcKey's children's trusts are higher
+gcTrustscale = 3    # srcKey's grandchildren's trusts are higher
 mutationRate = 0.01 # rate of swithing 0 and 1
 srcKey = 5
 
@@ -41,7 +42,14 @@ scorePlotName = "plots/" + str(scorePlotNum) + "_ScorePlot_" + scoreComment + ".
 colorim = Image.new("RGB", (800, 600), (0,0,0,0)) # image of all the coloring changes
 draw = ImageDraw.Draw(colorim)
 colorimName = "plots/" + str(scorePlotNum) + "_Colors_" + colorimComment + ".png"
-cim_yIncrement = 600/genSize  # this can have up to 0.5 precision
+# TODO: add checks
+# GENSIZE MUST BE <= 600 for now
+cim_yIncrement = 600/totalgens  # this can have up to 0.5 precision
+# TOTALKEYS MUST BE <= 800 for now
+cim_xIncrement = int(800/totalKeys)
+
+
+#########################################################################
 
 class Key:
     def __init__(self, keyNum, nameNum, color, parents = [], children = []):
@@ -191,6 +199,13 @@ if __name__ == '__main__':
         scoresPlotList.append(scores[0])
         # draw a row of colors on colorImage
         bestColorAssignment = oldGen[scores[0]]
+        for i in range(totalKeys): # == len(bestColorAssignment)
+            upperleftX = i * cim_xIncrement 
+            upperleftY = g * cim_yIncrement
+            lowerightX = (i+1) * cim_xIncrement
+            lowerightY = (g+1) * cim_yIncrement
+            thefill = "white" if bestColorAssignment[i] == 1 else "black"
+            draw.rectangle((upperleftX, upperleftY, lowerightX, lowerightY), fill=thefill)
 
         # pick the pickNum best ones
         for i in range(pickNum):
@@ -210,7 +225,7 @@ if __name__ == '__main__':
                 #print "keys in the graph:"
                 if (g % printStep == 0) and (i ==0) and (j == 0):
                     print "\n g = " + str(g)
-                    for k in keylist: print k
+                    #for k in keylist: print k
                     print "new geneScore = " + str(geneScore)
 
                 newGen[geneScore] = newColorAssignments
