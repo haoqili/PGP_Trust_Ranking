@@ -7,8 +7,8 @@ from simple_functions import nameDict
 from weighted_test import generateGraph1
 
 # Drawing Settings
-scorePlotNum = 6
-scoreComment = "600gens_20_4_trustscale"
+scorePlotNum = 14
+scoreComment = "data_100_100_50_30_20"
 colorimComment = ""
 
 # Output Settings
