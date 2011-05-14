@@ -16,7 +16,7 @@ nGood = 60          # number of Good Keys
 nImpersonated = 60  # number of Impersonated Keys
 nMadeup = 60        # number of Madeup Keys (keys that don't claim to be Good keys' people)
 nCertGood = 30      # max number of certificates a Good Key may sign
-nCertBad = 20       # max number of certificates an Impersonated Key may sign
+nCertBad = 20       # max number of certificates an Impersonated or Madeup Key may sign
 totalKeys = nGood + nImpersonated + nMadeup
 
 totalgens = 200     # number of generations after initial gen
