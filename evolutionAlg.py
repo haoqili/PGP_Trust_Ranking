@@ -5,62 +5,65 @@ import Image, ImageDraw
 from gene_functions import exclusive, violation
 from weighted_test import generateGraph1
 
-# Drawing Settings
-scorePlotNum = 21
-scoreComment = "yourComment"
-colorimComment = "yourComment"
-
-# Output Settings
-printStep = 100     # print score per printStep geneartions
+# Drawing Name Settings
+scorePlotNum = 31               # part of the plot name, feel free to change
+scoreComment = "yourComment"    # part of the plot name, feel free to change
+colorimComment = "yourComment"  # part of the plot name, feel free to change
 
 # Internal Settings
-# good, fake, bad, max number of signatures for good, max sigs for bad
-# fake = pretending to be someone else. bad = made up people 
 #keylist = generateGraph1(100,100,50,30,20) # srcKey set above
-goodNum = 50
-fakeNum = 50
-badNum = 20
-goodSigs = 30
-badSigs = 20
-totalKeys = goodNum+fakeNum+badNum
+nGood = 60          # number of Good Keys
+nImpersonated = 60  # number of Impersonated Keys
+nMadeup = 60        # number of Madeup Keys (keys that don't claim to be Good keys' people)
+nCertGood = 30      # max number of certificates a Good Key may sign
+nCertBad = 20       # max number of certificates an Impersonated Key may sign
+totalKeys = nGood + nImpersonated + nMadeup
 
-totalgens = 200    # number of generations after initial gen
+totalgens = 200     # number of generations after initial gen
 scale = 10          # tweaks how strongly consistency is violated
 genSize = 100       # number of babies per generation
 pickNum = 5         # number of babies picked to be as parents (asexually)
-produceNum = genSize/pickNum    # number of babies produced per parent
-cTrustscale = 20    # srcKey's children's trusts are higher
+produceNum = genSize/pickNum # number of babies produced per parent
+cTrustscale = 20    # srcKey's children's trusts are higher. The number of times to duplicate source node's children, i.e. if the source node starts with 3 children (getting 3 points), it will duplicate it to appear to have 60 children (60 points). The point is so that the source's children's trust should outweigh other node's childrens. (Trust the source the most!)
 gcTrustscale = 4    # srcKey's grandchildren's trusts are higher
 mutationRate = 0.01 # rate of swithing 0 and 1
 srcKey = 5
 
+# Output Settings
+printStep = totalgens/10 # print score per printStep geneartions
+
 # Drawing Internals
+booPlot = True
 scoresPlotList = []     # to be plotted with plt
 scorePlotName = "plots/" + str(scorePlotNum) + "_ScorePlot_" + scoreComment + ".png"
 
 colorim = Image.new("RGB", (800, 600), (0,0,0,0)) # image of all the coloring changes
 draw = ImageDraw.Draw(colorim)
 colorimName = "plots/" + str(scorePlotNum) + "_Colors_" + colorimComment + ".png"
-# TODO: add checks
-# GENSIZE MUST BE <= 600 for now
+if (totalgens > 600) or (totalKeys > 800):
+    booPlot = False
+    print "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" 
+    print "!!!! No Plots because generation > 600 or totalKeys > 800 "
+    print "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" 
+
+# GENSIZE MUST BE <= 600 to fit in the 600-pixel height of picture
 cim_yIncrement = 600/totalgens  # this can have up to 0.5 precision
-# TOTALKEYS MUST BE <= 800 for now
+# TOTALKEYS MUST BE <= 800 to fit in the 800-pixel width of picture
 cim_xIncrement = int(800/totalKeys)
 
 
 #########################################################################
 
 class Key:
-    def __init__(self, keyNum, nameNum, color, parents = [], children = []):
+    def __init__(self, keyNum, nameNum, color, children = []):
         self.keyNum = keyNum
         self.nameNum = nameNum
         self.color = color          # black is 0, white is 1
-        self.parents = parents      # parent's keyNums, NEVEN USED!!!!
         self.children = children    # children's keyNums
     def __str__(self):
         return str(self.keyNum) + "\t" + str(self.nameNum) + "\t" + \
             str(self.color) + "\t" + \
-            str(self.parents) + "\t" + str(self.children)
+            str(self.children)
     def __repr__(self):
         return self.__str__()
 
@@ -160,21 +163,25 @@ def resetKeyColors(keylist, newColorAssignments):
 
 if __name__ == '__main__':
     print "Begin PGP Trust Ranking"
-    print "using the Genetic Algorithm"
-    print "20 trust assignments for each generation, 5 best survive to contribute 4 in the next generation with small modifications (no mating)" 
+    print "using the Evolutionary Algorithm (note: asexual reproduction!)"
+    print "\nDetails of this run:"
+    print "Number of Generations:\t" + str(totalgens)
+    print "Generation Size:\t" + str(genSize)
+    print "Per generation, number of trust assignments to produce progeny:\t" + str(pickNum)
+    print "Number of preset Good Keys:\t\t" + str(nGood)
+    print "Number of preset Impersonated Keys:\t" + str(nImpersonated)
+    print "Number of preset Madeup Keys:\t\t" + str(nMadeup)
 
     print
-    # good, fake, bad, max number of signatures for good, max sigs for bad
-    # fake = pretending to be someone else. bad = made up people 
-    keylist = generateGraph1(goodNum,fakeNum,badNum,goodSigs,badSigs) # srcKey set above
+    keylist = generateGraph1(nGood,nImpersonated,nMadeup,nCertGood,nCertBad) # srcKey set above
 
     # Increase trust for srckey's grandchildren and children
     for n in keylist[srcKey].children:
         keylist[n].children = keylist[n].children*gcTrustscale
     keylist[srcKey].children = keylist[srcKey].children*cTrustscale
     
-    print "Initial graph: "
-    for k in keylist: print k
+    #print "Initial graph: "
+    #for k in keylist: print k
 
     # Generation 0: randomly assign trust color 20 times
     # each time remembers: geneScore --> colorAssignments
@@ -208,15 +215,16 @@ if __name__ == '__main__':
 
         # put the best score in the plot list
         scoresPlotList.append(scores[0])
-        # draw a row of colors on colorImage
-        bestColorAssignment = oldGen[scores[0]]
-        for i in range(totalKeys): # == len(bestColorAssignment)
-            upperleftX = i * cim_xIncrement 
-            upperleftY = g * cim_yIncrement
-            lowerightX = (i+1) * cim_xIncrement
-            lowerightY = (g+1) * cim_yIncrement
-            thefill = "white" if bestColorAssignment[i] == 1 else "black"
-            draw.rectangle((upperleftX, upperleftY, lowerightX, lowerightY), fill=thefill)
+        if booPlot:
+            # draw a row of colors on colorImage
+            bestColorAssignment = oldGen[scores[0]]
+            for i in range(totalKeys): # == len(bestColorAssignment)
+                upperleftX = i * cim_xIncrement 
+                upperleftY = g * cim_yIncrement
+                lowerightX = (i+1) * cim_xIncrement
+                lowerightY = (g+1) * cim_yIncrement
+                thefill = "white" if bestColorAssignment[i] == 1 else "black"
+                draw.rectangle((upperleftX, upperleftY, lowerightX, lowerightY), fill=thefill)
 
         # pick the pickNum best ones
         for i in range(pickNum):
@@ -252,16 +260,27 @@ if __name__ == '__main__':
     # put the score in the plot list
     scoresPlotList.append(scores[0])
     # pick best one
-    print "\nBEST SCORE: " + str(scores[0])
+    print "\nFINAL SCORE: " + str(scores[0])
     oldColorAssignment = oldGen[scores[0]]
     resetKeyColors(keylist, oldColorAssignment)
-    for k in keylist: print k
+    # print "Final assignments:"
+    # for k in keylist: print k
 
-    # plot the scores
-    plt.plot(scoresPlotList)
-    plt.ylabel('Score (higher = worse)')
-    plt.xlabel('Generation Numbers')
-    plt.savefig(scorePlotName)
+    if booPlot:
+        # plot the scores
+        plt.plot(scoresPlotList)
+        plt.ylabel('Score (higher = worse)')
+        plt.xlabel('Generation Numbers')
+        plt.savefig(scorePlotName)
 
-    # draw the colors
-    colorim.save(colorimName)
+        # draw the colors
+        colorim.save(colorimName)
+
+        print
+        print "See your plots at:"
+        print "Score plot: " + scorePlotName
+        print "Trust plot: " + colorimName
+    else:
+        print "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" 
+        print "!!!! No Plots because generation > 600 or totalKeys > 800 "
+        print "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" 

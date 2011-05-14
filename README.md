@@ -4,7 +4,7 @@ Project Summary
 1. Directed Graph of trust where node = key, edge = certification
 2. Source node/key
 
-Use Evolutonary Algorithm-->
+Use Evolutionary Algorithm-->
 
 **Output:** Trust assigned to each node/key (1 = trustworthy, 0 = not trust worthy) with respect to that source node (trust is in the eye of the beholder).
 
@@ -20,6 +20,8 @@ Run **evolutionAlg.py** plots will be saved in "plots"
 You should change the parameters in the code.
 
 Read the "paper.pdf" for details (for more rigor).
+
+**Requires <a href="http://matplotlib.sourceforge.net/">Matplotlib</a>**
 
 Key concepts: PGP, Web of Trust.
 
@@ -52,8 +54,12 @@ The Web of Trust is represented by a Directed graph where
 
 **Goal:** How to assign trust to each node to result in the least violation score?
 
-Output Graphs:
+Output Plots:
 ---------
-- The black and white plots signify the trust across generation, each generation is a row.
+- Score Plot: Violation Score through generations.
+- Trust Plot: The black and white plots signify the trust across generation, each generation is a row.
     The order of the keys go from left to right as: Good Key, Impersonated Keys, Madeup Keys
-- Violation Score through generations.
+
+About
+--------
+For 6.857 class final project, by haoqili and linfei. We worked with H. Yang who did part 1, making PGP key signing with Android phone barcode scanner.
