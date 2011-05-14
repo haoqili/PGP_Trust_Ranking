@@ -1,3 +1,5 @@
+# Used to be another algorithm, but it was too slow (and kind stupid), but just using its graph generation
+
 import math
 import random
 

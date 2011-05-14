@@ -3,11 +3,10 @@ import matplotlib.pyplot as plt
 import Image, ImageDraw
 
 from gene_functions import exclusive, violation
-from simple_functions import nameDict
 from weighted_test import generateGraph1
 
 # Drawing Settings
-scorePlotNum = 20
+scorePlotNum = 21
 scoreComment = "yourComment"
 colorimComment = "yourComment"
 
@@ -18,9 +17,9 @@ printStep = 100     # print score per printStep geneartions
 # good, fake, bad, max number of signatures for good, max sigs for bad
 # fake = pretending to be someone else. bad = made up people 
 #keylist = generateGraph1(100,100,50,30,20) # srcKey set above
-goodNum = 100
-fakeNum = 100
-badNum = 50
+goodNum = 50
+fakeNum = 50
+badNum = 20
 goodSigs = 30
 badSigs = 20
 totalKeys = goodNum+fakeNum+badNum
@@ -64,6 +63,18 @@ class Key:
             str(self.parents) + "\t" + str(self.children)
     def __repr__(self):
         return self.__str__()
+
+# returns a dictionary of name --> keyNum list with that name
+def nameDict(keylist):
+    nameDict = {}
+    for k in keylist:
+        if k.nameNum in nameDict:
+            # if the key's has been seen already
+            nameDict[k.nameNum].append(k.keyNum)
+        else:
+            # else create a new name --> keyNum entry
+            nameDict[k.nameNum] = [k.keyNum]
+    return nameDict
 
 # the genetic algorithm:
 # - randomly assigns trust worthiness number to each node

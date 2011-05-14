@@ -1,3 +1,7 @@
+# First file. 
+# Goal: make all descendants of trustworthy nodes trust = 1, 
+# make all ancestors of untrustworthy nodes trust = 0
+
 class Key:
     def __init__(self, keyNum, nameNum, color, parents = [], children = []):
         self.keyNum = keyNum

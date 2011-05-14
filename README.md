@@ -11,20 +11,18 @@ Use Evolutonary Algorithm-->
 **Goal:** How to assign trust to each node to result in the least violation score (see Details)?
 
 
-
-More Info
-===========
+Files Explaination
+=========
 Look at the "presentation.pdf" for an overview of this project
+
+Run **evolutionAlg.py** plots will be saved in "plots"
+
+You should change the parameters in the code.
 
 Read the "paper.pdf" for details (for more rigor).
 
 Key concepts: PGP, Web of Trust.
 
-Program Explaination
-=========
-Run evolutionAlg.py, plots will be saved in "plots"
-
-You should change the parameters in the code.
 
 Details
 ==========
