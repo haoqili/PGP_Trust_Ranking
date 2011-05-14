@@ -7,9 +7,9 @@ from simple_functions import nameDict
 from weighted_test import generateGraph1
 
 # Drawing Settings
-scorePlotNum = 14
-scoreComment = "data_100_100_50_30_20"
-colorimComment = ""
+scorePlotNum = 20
+scoreComment = "yourComment"
+colorimComment = "yourComment"
 
 # Output Settings
 printStep = 100     # print score per printStep geneartions
@@ -25,7 +25,7 @@ goodSigs = 30
 badSigs = 20
 totalKeys = goodNum+fakeNum+badNum
 
-totalgens = 600    # number of generations after initial gen
+totalgens = 200    # number of generations after initial gen
 scale = 10          # tweaks how strongly consistency is violated
 genSize = 100       # number of babies per generation
 pickNum = 5         # number of babies picked to be as parents (asexually)
@@ -56,7 +56,7 @@ class Key:
         self.keyNum = keyNum
         self.nameNum = nameNum
         self.color = color          # black is 0, white is 1
-        self.parents = parents      # parent's keyNums
+        self.parents = parents      # parent's keyNums, NEVEN USED!!!!
         self.children = children    # children's keyNums
     def __str__(self):
         return str(self.keyNum) + "\t" + str(self.nameNum) + "\t" + \
