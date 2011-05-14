@@ -1,19 +1,14 @@
 Project Summary
 ==========
-Input: 
-
-- Directed Graph of trust where node = key, edge = certification
-- Source node/key
+**Input:** 
+1. Directed Graph of trust where node = key, edge = certification
+2. Source node/key
 
 Use Evolutonary Algorithm-->
 
-Output:
+**Output:** Trust assigned to each node/key (1 = trustworthy, 0 = not trust worthy) with respect to that source node (trust is in the eye of the beholder).
 
-- Trust assigned to each node/key (1 = trustworthy, 0 = not trust worthy) with respect to that source node (trust is in the eye of the beholder).
-
-Goal:
-
-- How to assign trust to each node to result in the least violation score (see Details)?
+**Goal:** How to assign trust to each node to result in the least violation score (see Details)?
 
 
 
@@ -28,6 +23,7 @@ Key concepts: PGP, Web of Trust.
 Program Explaination
 =========
 Run evolutionAlg.py, plots will be saved in "plots"
+
 You should change the parameters in the code.
 
 Details
@@ -47,20 +43,16 @@ The Web of Trust is represented by a Directed graph where
 
 - Trust is boolean: 1 = trustworthy. 0 = not trustworthy. 
 - Keys has inforamtion on the Name it belongs to, the children keys, and trust
-
-    3 types of keys:
-
-        - Good Key = keys of real people, matching their Names. Trust should = 1
-        - Impersonated Keys = keys pretending to be a Good Key's person. Trust should = 0
-        - Madeup Keys = keys pretending to be people who don't exist in the Good Keys (like Santa Claus). It's made by the same people who made the impersonated keys to sign the impersonted keys (to make the Impersonted Obama key look credible). Trust should = 0
+    - Good Key = keys of real people, matching their Names. Trust should = 1
+    - Impersonated Keys = keys pretending to be a Good Key's person. Trust should = 0
+    - Madeup Keys = keys pretending to be people who don't exist in the Good Keys (like Santa Claus). It's made by the same people who made the impersonated keys to sign the impersonted keys (to make the Impersonted Obama key look credible). Trust should = 0
 - Nodes = keys
 - Edges = A -- signed --> B's Key
 - Person Group: All keys' claiming to be their Name (e.g. the Obama Person group are all keys, fake or real, claiming to be Obama)
     - In our policy, we make the real person inter-sign all the keys s/he has, so all the keys become 1 supernode. So every person group should have at most 1 real node.
 - Signing Vilotation point = 1 point for each edge going from a Trust 1 to a Trust 0 key
 
-Goal:
-- How to assign trust to each node to result in the least violation score?
+**Goal:** How to assign trust to each node to result in the least violation score?
 
 Output Graphs:
 ---------
