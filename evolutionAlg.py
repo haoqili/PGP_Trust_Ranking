@@ -3,10 +3,9 @@ import matplotlib.pyplot as plt
 import Image, ImageDraw
 
 from gene_functions import exclusive, violation
-from weighted_test import generateGraph1
 
 # Drawing Name Settings
-scorePlotNum = 31               # part of the plot name, feel free to change
+scorePlotNum = 32               # part of the plot name, feel free to change
 scoreComment = "yourComment"    # part of the plot name, feel free to change
 colorimComment = "yourComment"  # part of the plot name, feel free to change
 
@@ -161,6 +160,43 @@ def resetKeyColors(keylist, newColorAssignments):
     for i in range(len(newColorAssignments)):
         keylist[i].color = newColorAssignments[i]
 
+def generateGraph1(nGood,nImpersonated,nMadeup,nCertGood,nCertBad):
+    #Perfect world, no good guy ever signs bad guy
+    keylist = []
+    for i in range(0,nGood):
+        numChild = random.randint(1,nCertGood)
+        lst = []
+        while len(lst) < numChild:
+            target = random.randint(0,nGood-1)
+            if target != i and not (target in lst):
+                lst.append(target)
+        keyG = Key(i,i,0,lst)
+        keylist.append(keyG)
+
+    for i in range(nGood,nGood+nImpersonated):
+        numChild = random.randint(1,nCertBad)
+        lst = []
+        while len(lst) < numChild:
+            target = random.randint(0,nGood+nImpersonated+nMadeup-1)
+            if target != i and not (target in lst):
+                lst.append(target)
+        keyF = Key(i,random.randint(0,nGood-1),0,lst)
+        keylist.append(keyF)
+
+    for i in range(nGood+nImpersonated,nGood+nImpersonated+nMadeup):
+        numChild = random.randint(1,nCertBad)
+        lst = []
+        while len(lst) < numChild:
+            target = random.randint(0,nGood+nImpersonated+nMadeup-1)
+            if target != i and not (target in lst):
+                lst.append(target)
+        keyB = Key(i,i,0,lst)
+        keylist.append(keyB)
+
+    return keylist
+
+
+
 if __name__ == '__main__':
     print "Begin PGP Trust Ranking"
     print "using the Evolutionary Algorithm (note: asexual reproduction!)"
@@ -187,7 +223,7 @@ if __name__ == '__main__':
     # each time remembers: geneScore --> colorAssignments
     oldGen = {}
     newGen = {}
-    print "\n===================================\n"
+    print "===================================\n"
     print "Generation 0 "
     for i in range(genSize):
         # 1. get generation 0's colors
