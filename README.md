@@ -1,15 +1,11 @@
-Project Summary
+Why?
 ==========
-**Input:** 
-1. Directed Graph of trust where node = key, edge = certification
-2. Source node/key
+PGP has a big problem. Who can we trust?? You can't trust keys because:
 
-Use Evolutionary Algorithm-->
-
-**Output:** Trust assigned to each node/key (1 = trustworthy, 0 = not trust worthy) with respect to that source node (trust is in the eye of the beholder).
+1. Impersonation: A key that claims to be Obama might actually not be Obama, although most people won't believe a key that doesn't have any signatures.
+2. Anyone can sign any key. The Obama Impersonator Key may create fake keys to sign itself to make it more believable.
 
 **Goal:** How to assign trust to each node to result in the least violation score (see Details)?
-
 
 Files Explaination
 =========
@@ -29,13 +25,14 @@ Key concepts: PGP, Web of Trust.
 Details
 ==========
 (from "presentation.pdf")
+**Input:** 
+1. Directed Graph of trust where node = key, edge = certification
+2. Source node/key
 
-Why?
-------
-PGP has a big problem. Who can we trust?? You can't trust keys because:
+Use Evolutionary Algorithm-->
 
-1. Impersonation: A key that claims to be Obama might actually not be Obama.  But most people won't believe a key that doesn't have any signatures.
-2. Anyone can sign any key. The Obama Impersonator Key may create fake keys to sign itself to trick people further. 
+**Output:** Trust assigned to each node/key (1 = trustworthy, 0 = not trust worthy) with respect to that source node (trust is in the eye of the beholder).
+
 
 Our Algorithm Specifications
 -------
