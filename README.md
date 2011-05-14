@@ -1,15 +1,18 @@
 Project Summary
 ==========
 Input: 
+
 - Directed Graph of trust where node = key, edge = certification
 - Source node/key
 
 Use Evolutonary Algorithm-->
 
 Output:
+
 - Trust assigned to each node/key (1 = trustworthy, 0 = not trust worthy) with respect to that source node (trust is in the eye of the beholder).
 
 Goal:
+
 - How to assign trust to each node to result in the least violation score (see Details)?
 
 
@@ -34,15 +37,19 @@ Details
 Why?
 ------
 PGP has a big problem. Who can we trust?? You can't trust keys because:
+
 1. Impersonation: A key that claims to be Obama might actually not be Obama.  But most people won't believe a key that doesn't have any signatures.
 2. Anyone can sign any key. The Obama Impersonator Key may create fake keys to sign itself to trick people further. 
 
 Our Algorithm Specifications
 -------
 The Web of Trust is represented by a Directed graph where 
+
 - Trust is boolean: 1 = trustworthy. 0 = not trustworthy. 
 - Keys has inforamtion on the Name it belongs to, the children keys, and trust
+
     3 types of keys:
+
         - Good Key = keys of real people, matching their Names. Trust should = 1
         - Impersonated Keys = keys pretending to be a Good Key's person. Trust should = 0
         - Madeup Keys = keys pretending to be people who don't exist in the Good Keys (like Santa Claus). It's made by the same people who made the impersonated keys to sign the impersonted keys (to make the Impersonted Obama key look credible). Trust should = 0
